@@ -15,14 +15,12 @@
 package com.liferay.weather.action;
 
 import com.liferay.portal.kernel.portlet.DefaultConfigurationAction;
-import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.kernel.util.StringUtil;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
-import javax.portlet.ValidatorException;
 
 /**
  * @author Samuel Kong
@@ -40,13 +38,7 @@ public class ConfigurationActionImpl extends DefaultConfigurationAction {
 
 		setPreference(actionRequest, "zips", zips);
 
-		try {
-			super.processAction(portletConfig, actionRequest, actionResponse);
-		}
-		catch (ValidatorException ve) {
-			SessionErrors.add(
-				actionRequest, ValidatorException.class.getName(), ve);
-		}
+		super.processAction(portletConfig, actionRequest, actionResponse);
 	}
 
 }

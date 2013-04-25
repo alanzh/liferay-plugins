@@ -25,6 +25,10 @@ import com.liferay.weather.model.Weather;
  */
 public class WeatherUtil {
 
+	public static final String DEFAULT_ZIP_NEW_YORK = "10021";
+	public static final String MESSAGE_INVALID_KEY = "Invalid api key";
+	public static final String MESSAGE_INVALID_ZIP = "Failed to retrieve zips";
+
 	public static Weather getWeather(String apiKey, String zip) {
 		StringBundler sb = new StringBundler(5);
 

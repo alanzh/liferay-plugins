@@ -14,6 +14,7 @@
 
 package com.liferay.weather.portlet;
 
+import com.liferay.portal.kernel.util.Validator;
 import com.liferay.weather.model.Weather;
 import com.liferay.weather.util.WeatherUtil;
 
@@ -37,6 +38,17 @@ public class WeatherPreferencesValidator implements PreferencesValidator {
 		String apiKey = preferences.getValue("apiKey", null);
 		String[] zips = preferences.getValues("zips", new String[0]);
 
+		if (Validator.isNull(apiKey)) {
+			throw new ValidatorException(WeatherUtil.MESSAGE_INVALID_KEY, null);
+		}
+
+		Weather defaultWeather = WeatherUtil.getWeather(
+			apiKey, WeatherUtil.DEFAULT_ZIP_NEW_YORK);
+
+		if (defaultWeather == null) {
+			throw new ValidatorException(WeatherUtil.MESSAGE_INVALID_KEY, null);
+		}
+
 		for (String zip : zips) {
 			Weather weather = WeatherUtil.getWeather(apiKey, zip);
 
@@ -46,7 +58,8 @@ public class WeatherPreferencesValidator implements PreferencesValidator {
 		}
 
 		if (badZips.size() > 0) {
-			throw new ValidatorException("Failed to retrieve zips", badZips);
+			throw new ValidatorException(
+				WeatherUtil.MESSAGE_INVALID_ZIP, badZips);
 		}
 	}
 

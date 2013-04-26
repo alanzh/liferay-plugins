@@ -33,33 +33,33 @@ zipsString = StringUtil.merge(zips, StringPool.NEW_LINE);
 
 		<%
 		ValidatorException ve = (ValidatorException)errorException;
-
-		if (ve.getMessage().equals(WeatherUtil.MESSAGE_INVALID_KEY)) {
 		%>
 
-			<liferay-ui:message key="please-enter-a-valid-api-key" />
+		<c:choose>
+			<c:when test="<%= ve.getMessage().equals(WeatherUtil.MESSAGE_INVALID_KEY) %>">
+				<liferay-ui:message key="please-enter-a-valid-api-key" />
+			</c:when>
+			<c:when test="<%= ve.getMessage().equals(WeatherUtil.MESSAGE_INVALID_NETWORK) %>">
+				<liferay-ui:message key="please-check-network" />
+			</c:when>
+			<c:when test="<%= ve.getMessage().equals(WeatherUtil.MESSAGE_INVALID_ZIP) %>">
+				<liferay-ui:message key="the-following-are-invalid-cities-or-zip-codes" />
 
-		<%
-		}
-		else if (ve.getMessage().equals(WeatherUtil.MESSAGE_INVALID_ZIP)) {
-		%>
+				<%
+				Enumeration<String> enu = ve.getFailedKeys();
 
-			<liferay-ui:message key="the-following-are-invalid-cities-or-zip-codes" />
+				while (enu.hasMoreElements()) {
+					String zip = enu.nextElement();
+				%>
 
-			<%
-			Enumeration<String> enu = ve.getFailedKeys();
+					<strong><%= HtmlUtil.escape(zip) %></strong><%= (enu.hasMoreElements()) ? ", " : "." %>
 
-			while (enu.hasMoreElements()) {
-				String zip = enu.nextElement();
-			%>
+				<%
+				}
+				%>
 
-				<strong><%= HtmlUtil.escape(zip) %></strong><%= (enu.hasMoreElements()) ? ", " : "." %>
-
-		<%
-			}
-		}
-		%>
-
+			</c:when>
+		</c:choose>
 	</liferay-ui:error>
 
 	<div class="portlet-msg-info">

@@ -15,8 +15,6 @@
 package com.liferay.weather.util;
 
 import com.liferay.portal.kernel.util.GetterUtil;
-import com.liferay.portal.kernel.util.HttpUtil;
-import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.kernel.util.Time;
 import com.liferay.portal.kernel.webcache.WebCacheException;
 import com.liferay.portal.kernel.webcache.WebCacheItem;
@@ -59,16 +57,7 @@ public class WeatherWebCacheItem implements WebCacheItem {
 	}
 
 	protected Weather doConvert(String key) throws Exception {
-		StringBundler sb = new StringBundler(5);
-
-		sb.append(
-			"http://api.worldweatheronline.com/free/v1/weather.ashx?key=");
-		sb.append(_apiKey);
-		sb.append("&q=");
-		sb.append(HttpUtil.encodeURL(_zip));
-		sb.append("&format=xml");
-
-		String xml = HttpUtil.URLtoString(sb.toString());
+		String xml = WeatherUtil.getWeatherResponseBody(_apiKey, _zip);
 
 		Document document = SAXReaderUtil.read(xml);
 

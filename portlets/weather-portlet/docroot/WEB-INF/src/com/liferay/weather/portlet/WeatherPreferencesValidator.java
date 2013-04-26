@@ -18,6 +18,8 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.weather.model.Weather;
 import com.liferay.weather.util.WeatherUtil;
 
+import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,21 +35,13 @@ public class WeatherPreferencesValidator implements PreferencesValidator {
 	public void validate(PortletPreferences preferences)
 		throws ValidatorException {
 
+		String apiKey = preferences.getValue("apiKey", null);
+
+		validateAPIKey(apiKey);
+
 		List<String> badZips = new ArrayList<String>();
 
-		String apiKey = preferences.getValue("apiKey", null);
 		String[] zips = preferences.getValues("zips", new String[0]);
-
-		if (Validator.isNull(apiKey)) {
-			throw new ValidatorException(WeatherUtil.MESSAGE_INVALID_KEY, null);
-		}
-
-		Weather defaultWeather = WeatherUtil.getWeather(
-			apiKey, WeatherUtil.DEFAULT_ZIP_NEW_YORK);
-
-		if (defaultWeather == null) {
-			throw new ValidatorException(WeatherUtil.MESSAGE_INVALID_KEY, null);
-		}
 
 		for (String zip : zips) {
 			Weather weather = WeatherUtil.getWeather(apiKey, zip);
@@ -60,6 +54,26 @@ public class WeatherPreferencesValidator implements PreferencesValidator {
 		if (badZips.size() > 0) {
 			throw new ValidatorException(
 				WeatherUtil.MESSAGE_INVALID_ZIP, badZips);
+		}
+	}
+
+	public void validateAPIKey(String apiKey) throws ValidatorException {
+		if (Validator.isNull(apiKey)) {
+			throw new ValidatorException(WeatherUtil.MESSAGE_INVALID_KEY, null);
+		}
+
+		String responseBody;
+
+		try {
+			responseBody = WeatherUtil.getWeatherResponseBody(
+				apiKey, WeatherUtil.DEFAULT_CITY_LONDON);
+		} catch (IOException e) {
+			throw new ValidatorException(
+				WeatherUtil.MESSAGE_INVALID_NETWORK, null);
+		}
+
+		if (responseBody.equals("<h1>Developer Inactive</h1>")) {
+			throw new ValidatorException(WeatherUtil.MESSAGE_INVALID_KEY, null);
 		}
 	}
 
